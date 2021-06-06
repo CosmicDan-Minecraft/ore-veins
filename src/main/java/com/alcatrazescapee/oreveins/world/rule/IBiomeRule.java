@@ -36,8 +36,13 @@ public interface IBiomeRule extends Predicate<Biome>
         {
             if ("tag".equals(typeName))
             {
-                final BiomeDictionary.Type type = BiomeDictionary.Type.getType(JSONUtils.getString(json, "biomes"));
-                return biome -> BiomeDictionary.getTypes(biome).contains(type);
+                final BiomeDictionary.Type type = BiomeDictionary.Type.getType(JSONUtils.getAsString(json, "biomes"));
+                return new IBiomeRule() {
+                    @Override
+                    public boolean test(Biome biome) {
+                        return BiomeDictionary.getTypes(biome).contains(type);
+                    }
+                };
             }
             else if ("biome".equals(typeName))
             {
