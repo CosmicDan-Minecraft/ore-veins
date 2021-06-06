@@ -39,7 +39,7 @@ public class WeightedListDeserializer<T> implements JsonDeserializer<IWeightedLi
                 if (element.isJsonObject())
                 {
                     JsonObject obj = element.getAsJsonObject();
-                    float weight = JSONUtils.getFloat(obj, "weight", 1);
+                    float weight = JSONUtils.getAsFloat(obj, "weight", 1);
                     states.add(weight, context.deserialize(element, elementClass));
                 }
                 else

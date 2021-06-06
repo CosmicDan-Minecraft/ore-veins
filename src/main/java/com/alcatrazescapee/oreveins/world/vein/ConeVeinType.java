@@ -22,8 +22,8 @@ public class ConeVeinType extends SingleVeinType<Vein<?>>
     public ConeVeinType(JsonObject obj, JsonDeserializationContext context) throws JsonParseException
     {
         super(obj, context);
-        shape = JSONUtils.getFloat(obj, "shape", 0.5f);
-        inverted = JSONUtils.getBoolean(obj, "inverted", false);
+        shape = JSONUtils.getAsFloat(obj, "shape", 0.5f);
+        inverted = JSONUtils.getAsBoolean(obj, "inverted", false);
     }
 
     @Override

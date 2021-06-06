@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ISeedReader;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
@@ -70,16 +70,16 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
 
     public VeinsFeature()
     {
-        super(NoFeatureConfig::deserialize);
+        super(NoFeatureConfig.CODEC);
     }
 
     @Override
-    public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, NoFeatureConfig config)
+    public boolean place(ISeedReader seedReader, ChunkGenerator generator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
         // Get all nearby veins, filtering out those which are in the wrong dimension
-        List<Vein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS)
+        List<Vein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, seedReader.getSeed(), CHUNK_RADIUS)
             .stream()
-            .filter(vein -> vein.getType().matchesDimension(worldIn.getDimension().getType()))
+            .filter(vein -> vein.getType().matchesDimension(seedReader.dimensionType()))
                 .collect(Collectors.toList());
         for (int x = pos.getX(); x < 16 + pos.getX(); x++)
         {
@@ -88,7 +88,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                 // Do checks here that are specific to the the horizontal position, not the vertical one
                 // We load the biome only once and cache it for lazy purposes
                 BlockPos biomePos = new BlockPos(x, 0, z);
-                Lazy<Biome> lazyBiome = Lazy.of(() -> worldIn.getBiome(biomePos));
+                Lazy<Biome> lazyBiome = Lazy.of(() -> seedReader.getBiome(biomePos));
 
                 // Then we perform the same checks for each vein
                 for (Vein<?> vein : veins)
@@ -103,14 +103,14 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                             BlockPos posAt = new BlockPos(x, y, z);
                             if (rand.nextFloat() < vein.getChanceToGenerate(posAt))
                             {
-                                if (vein.getType().canGenerateAt(worldIn, posAt))
+                                if (vein.getType().canGenerateAt(seedReader, posAt))
                                 {
                                     BlockState oreState = vein.getStateToGenerate(pos, rand);
-                                    setBlockState(worldIn, posAt, oreState);
+                                    setBlock(seedReader, posAt, oreState);
                                     if (veinIndicator != null && !canGenerateIndicator)
                                     {
                                         Heightmap.Type heightmap = veinIndicator.shouldIgnoreLiquids() ? OCEAN_FLOOR_WG : WORLD_SURFACE_WG;
-                                        int depth = worldIn.getHeight(heightmap, x, z) - y;
+                                        int depth = seedReader.getHeight(heightmap, x, z) - y;
                                         if (depth < 0)
                                         {
                                             depth = -depth;
@@ -126,19 +126,21 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                             if (rand.nextInt(veinIndicator.getRarity()) == 0)
                             {
                                 Heightmap.Type heightmap = veinIndicator.shouldIgnoreLiquids() ? OCEAN_FLOOR_WG : WORLD_SURFACE_WG;
-                                BlockPos posAt = worldIn.getHeight(heightmap, new BlockPos(x, 0, z));
+                                final int heightAt = seedReader.getHeight(heightmap, x, z);
+                                BlockPos posAt = new BlockPos(x, heightAt, z);
 
-                                BlockState indicatorState = veinIndicator.getStateToGenerate(rand);
-                                BlockState stateAt = worldIn.getBlockState(posAt);
+                                final BlockState indicatorState = veinIndicator.getStateToGenerate(rand);
+                                final BlockState stateAt = seedReader.getBlockState(posAt);
 
                                 // This happens after, as we replace what was the "under_state"
                                 if (veinIndicator.shouldReplaceSurface())
                                 {
-                                    posAt = posAt.down();
+                                    posAt = posAt.below();
                                 }
-                                if (indicatorState.isValidPosition(worldIn, posAt) && (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) && veinIndicator.validUnderState(worldIn.getBlockState(posAt.down())))
+                                // TODO: [CosmicDan feature add] check existing block (equivalency map)
+                                if (indicatorState.canSurvive(seedReader, posAt) && (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) && veinIndicator.validUnderState(seedReader.getBlockState(posAt.below())))
                                 {
-                                    setBlockState(worldIn, posAt, indicatorState);
+                                    setBlock(seedReader, posAt, indicatorState);
                                 }
                             }
                         }

@@ -14,7 +14,7 @@ import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
 public class ModFeatures
 {
-    public static final DeferredRegister<Feature<?>> FEATURES = new DeferredRegister<>(ForgeRegistries.FEATURES, MOD_ID);
+    public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(ForgeRegistries.FEATURES, MOD_ID);
 
     public static final RegistryObject<VeinsFeature> VEINS = FEATURES.register("veins", VeinsFeature::new);
 }

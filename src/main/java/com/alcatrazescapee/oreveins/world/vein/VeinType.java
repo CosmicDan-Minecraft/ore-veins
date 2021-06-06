@@ -20,9 +20,9 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
 
 import com.alcatrazescapee.oreveins.Config;
 import com.alcatrazescapee.oreveins.util.collections.IWeightedList;
@@ -50,33 +50,33 @@ public abstract class VeinType<V extends Vein<?>>
 
     protected VeinType(JsonObject json, JsonDeserializationContext context) throws JsonParseException
     {
-        count = JSONUtils.getInt(json, "count", 1);
+        count = JSONUtils.getAsInt(json, "count", 1);
         if (count <= 0)
         {
             throw new JsonParseException("Count must be > 0.");
         }
-        rarity = JSONUtils.getInt(json, "rarity", 10);
+        rarity = JSONUtils.getAsInt(json, "rarity", 10);
         if (rarity <= 0)
         {
             throw new JsonParseException("Count must be > 0.");
         }
-        minY = JSONUtils.getInt(json, "min_y", 16);
-        maxY = JSONUtils.getInt(json, "max_y", 64);
+        minY = JSONUtils.getAsInt(json, "min_y", 16);
+        maxY = JSONUtils.getAsInt(json, "max_y", 64);
         if (minY < 0 || maxY > 256 || minY > maxY)
         {
             throw new JsonParseException("Min Y and Max Y must be within [0, 256], and Min Y must be <= Max Y.");
         }
-        verticalSize = JSONUtils.getInt(json, "vertical_size", 8);
+        verticalSize = JSONUtils.getAsInt(json, "vertical_size", 8);
         if (verticalSize <= 0)
         {
             throw new JsonParseException("Vertical Size must be > 0.");
         }
-        horizontalSize = JSONUtils.getInt(json, "horizontal_size", 15);
+        horizontalSize = JSONUtils.getAsInt(json, "horizontal_size", 15);
         if (horizontalSize <= 0)
         {
             throw new JsonParseException("Horizontal Size must be > 0.");
         }
-        density = JSONUtils.getInt(json, "density", 20);
+        density = JSONUtils.getAsInt(json, "density", 20);
         if (density <= 0)
         {
             throw new JsonParseException("Density must be > 0.");

@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
     }
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -46,7 +46,9 @@ repositories {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200408-1.15.1'
+    //mappings channel: 'snapshot', version: '20200408-1.15.1'
+    mappings channel: 'official', version: '1.16.5'
+	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Run configurations
     runs {
@@ -70,6 +72,7 @@ minecraft {
             }
         }
 
+        /*
         serverTest {
             parent server // This run config inherits settings from the server config
             workingDirectory project.file('run')
@@ -89,6 +92,7 @@ minecraft {
                 }
             }
         }
+        */
     }
 }
 

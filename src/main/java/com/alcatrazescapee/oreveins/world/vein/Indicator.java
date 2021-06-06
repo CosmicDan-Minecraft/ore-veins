@@ -79,24 +79,24 @@ public class Indicator
                 throw new JsonParseException("Indicator must be a JSON Object");
             }
             JsonObject obj = json.getAsJsonObject();
-            int maxDepth = JSONUtils.getInt(obj, "max_depth", 32);
+            int maxDepth = JSONUtils.getAsInt(obj, "max_depth", 32);
             if (maxDepth <= 0)
             {
                 throw new JsonParseException("Max depth must be > 0");
             }
-            int rarity = JSONUtils.getInt(obj, "rarity", 10);
+            int rarity = JSONUtils.getAsInt(obj, "rarity", 10);
             if (rarity <= 0)
             {
                 throw new JsonParseException("Rarity must be > 0");
             }
-            boolean ignoreLiquids = JSONUtils.getBoolean(obj, "ignore_liquids", false);
+            boolean ignoreLiquids = JSONUtils.getAsBoolean(obj, "ignore_liquids", false);
             IWeightedList<BlockState> states = context.deserialize(obj.get("blocks"), new TypeToken<IWeightedList<BlockState>>() {}.getType());
             if (states.isEmpty())
             {
                 throw new JsonParseException("Block states cannot be empty!");
             }
             List<BlockState> underStates = obj.has("blocks_under") ? context.deserialize(obj.get("blocks_under"), new TypeToken<List<BlockState>>() {}.getType()) : Collections.emptyList();
-            boolean replaceSurface = JSONUtils.getBoolean(obj, "replace_surface", false);
+            boolean replaceSurface = JSONUtils.getAsBoolean(obj, "replace_surface", false);
             return new Indicator(maxDepth, replaceSurface, rarity, ignoreLiquids, states, underStates);
         }
     }

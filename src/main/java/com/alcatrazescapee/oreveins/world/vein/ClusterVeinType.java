@@ -22,7 +22,7 @@ public class ClusterVeinType extends SingleVeinType<VeinCluster>
     public ClusterVeinType(JsonObject obj, JsonDeserializationContext context) throws JsonParseException
     {
         super(obj, context);
-        clusters = JSONUtils.getInt(obj, "clusters", 3);
+        clusters = JSONUtils.getAsInt(obj, "clusters", 3);
         if (clusters <= 0)
         {
             throw new JsonParseException("Clusters must be > 0. If you set clusters=0 you should just use the sphere vein.");
@@ -72,7 +72,7 @@ public class ClusterVeinType extends SingleVeinType<VeinCluster>
             spawnPoints[0] = new Cluster(pos, 0.6f + 0.2f * rand.nextFloat());
             for (int i = 1; i < clusters; i++)
             {
-                final BlockPos clusterPos = pos.add(
+                final BlockPos clusterPos = pos.offset(
                     type.horizontalSize * (0.3f - 0.6f * rand.nextFloat()),
                     type.verticalSize * (0.3f - 0.6f * rand.nextFloat()),
                     type.horizontalSize * (0.3f - 0.6f * rand.nextFloat())

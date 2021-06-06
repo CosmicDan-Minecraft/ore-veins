@@ -22,7 +22,7 @@ public final class VeinInfoCommand
     public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
         dispatcher.register(
-            Commands.literal("veininfo").requires(source -> source.hasPermissionLevel(2))
+            Commands.literal("veininfo").requires(source -> source.hasPermission(2))
                 .then(Commands.argument("type", new VeinTypeArgument())
                     .executes(cmd -> veinInfo(cmd.getSource(), VeinTypeArgument.getVein(cmd, "type")))
                 ));
@@ -34,11 +34,11 @@ public final class VeinInfoCommand
         final VeinType<?> type = VeinManager.INSTANCE.getVein(veinName);
         if (type == null)
         {
-            source.sendErrorMessage(new TranslationTextComponent(MOD_ID + ".command.unknown_vein", veinName));
+            source.sendFailure(new TranslationTextComponent(MOD_ID + ".command.unknown_vein", veinName));
         }
         else
         {
-            source.sendFeedback(new TranslationTextComponent(MOD_ID + ".command.vein_info", type.toString()), true);
+            source.sendSuccess(new TranslationTextComponent(MOD_ID + ".command.vein_info", type.toString()), true);
         }
         return 1;
     }

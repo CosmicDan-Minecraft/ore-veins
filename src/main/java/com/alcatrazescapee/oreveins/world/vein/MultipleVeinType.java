@@ -28,7 +28,7 @@ public class MultipleVeinType extends VeinType<Vein<?>>
     {
         super(json, context);
 
-        types = context.deserialize(JSONUtils.getJsonArray(json, "veins"), new TypeToken<List<VeinType<?>>>() {}.getType());
+        types = context.deserialize(JSONUtils.getAsJsonArray(json, "veins"), new TypeToken<List<VeinType<?>>>() {}.getType());
         if (types.size() < 2)
         {
             throw new IllegalStateException("Multiple vein must have at least two child veins!");

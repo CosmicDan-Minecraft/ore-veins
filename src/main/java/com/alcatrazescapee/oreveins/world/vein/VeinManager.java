@@ -13,10 +13,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,15 +92,15 @@ public class VeinManager extends JsonReloadListener
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonObject> resources, IResourceManager manager, IProfiler profiler)
+    protected void apply(Map<ResourceLocation, JsonElement> resources, IResourceManager manager, IProfiler profiler)
     {
-        for (Map.Entry<ResourceLocation, JsonObject> entry : resources.entrySet())
+        for (Map.Entry<ResourceLocation, JsonElement> entry : resources.entrySet())
         {
             ResourceLocation name = entry.getKey();
-            JsonObject json = entry.getValue();
+            JsonElement json = entry.getValue();
             try
             {
-                if (CraftingHelper.processConditions(json, "conditions"))
+                if (CraftingHelper.processConditions(json.getAsJsonObject(), "conditions"))
                 {
                     veins.put(name, GSON.fromJson(json, VeinType.class));
                 }

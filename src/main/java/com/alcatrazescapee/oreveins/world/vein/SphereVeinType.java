@@ -21,7 +21,7 @@ public class SphereVeinType extends SingleVeinType<Vein<?>>
     {
         super(obj, context);
 
-        uniform = JSONUtils.getBoolean(obj, "uniform", false);
+        uniform = JSONUtils.getAsBoolean(obj, "uniform", false);
     }
 
     @Override

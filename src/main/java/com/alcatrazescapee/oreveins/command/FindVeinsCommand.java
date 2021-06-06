@@ -13,6 +13,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentUtils;
@@ -36,9 +37,9 @@ public final class FindVeinsCommand
     public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
         dispatcher.register(
-            Commands.literal("findveins").requires(source -> source.hasPermissionLevel(2))
+            Commands.literal("findveins").requires(source -> source.hasPermission(2))
                 .then(Commands.argument("type", new VeinTypeArgument())
-                    .suggests((context, builder) -> ISuggestionProvider.suggestIterable(VeinManager.INSTANCE.getKeys(), builder))
+                    .suggests((context, builder) -> ISuggestionProvider.suggestResource(VeinManager.INSTANCE.getKeys(), builder))
                     .then(Commands.argument("radius", IntegerArgumentType.integer(0, 250))
                         .executes(cmd -> findVeins(cmd.getSource(), VeinTypeArgument.getVein(cmd, "type"), IntegerArgumentType.getInteger(cmd, "radius")))
                     )
@@ -48,19 +49,19 @@ public final class FindVeinsCommand
 
     private static int findVeins(CommandSource source, ResourceLocation veinName, int radius) throws CommandSyntaxException
     {
-        final BlockPos pos = new BlockPos(source.getPos());
+        final BlockPos pos = new BlockPos(source.getPosition());
         final int chunkX = pos.getX() >> 4, chunkZ = pos.getZ() >> 4;
-        final List<Vein<?>> veins = VeinsFeature.getNearbyVeins(chunkX, chunkZ, source.getWorld().getSeed(), radius);
+        final List<Vein<?>> veins = VeinsFeature.getNearbyVeins(chunkX, chunkZ, source.getLevel().getSeed(), radius);
         final VeinType<?> type = VeinManager.INSTANCE.getVein(veinName);
         if (type == null)
         {
-            source.sendErrorMessage(new TranslationTextComponent(MOD_ID + ".command.unknown_vein", veinName.toString()));
+            source.sendFailure(new TranslationTextComponent(MOD_ID + ".command.unknown_vein", veinName.toString()));
         }
 
         // Search for veins matching type
         //noinspection EqualsBetweenInconvertibleTypes
         veins.removeIf(x -> !x.getType().equals(type));
-        source.sendFeedback(new TranslationTextComponent(MOD_ID + ".command.veins_found"), true);
+        source.sendSuccess(new TranslationTextComponent(MOD_ID + ".command.veins_found"), true);
         for (Vein<?> vein : veins)
         {
             ITextComponent resultText = new TranslationTextComponent(MOD_ID + ".command.vein_info", vein.toString());
@@ -72,7 +73,8 @@ public final class FindVeinsCommand
                     ITextComponent tpText = ITextComponent.Serializer.fromJsonLenient(String.format(TP_MESSAGE, veinPos.getX(), veinPos.getY(), veinPos.getZ()));
                     if (tpText != null)
                     {
-                        source.getEntity().sendMessage(TextComponentUtils.updateForEntity(source, resultText.appendSibling(tpText), source.getEntity(), 0));
+                        resultText.getSiblings().add(tpText);
+                        source.getEntity().sendMessage(TextComponentUtils.updateForEntity(source, resultText, source.getEntity(), 0), Util.NIL_UUID);
                     }
                 }
                 catch (JsonParseException e) { /* Ignore, it shouldn't happen */ }

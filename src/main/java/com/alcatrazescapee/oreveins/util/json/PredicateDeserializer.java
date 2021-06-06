@@ -30,13 +30,13 @@ public abstract class PredicateDeserializer<E, T extends Predicate<E>> implement
         if (json.isJsonObject())
         {
             JsonObject obj = json.getAsJsonObject();
-            String typeName = JSONUtils.getString(obj, "type");
+            String typeName = JSONUtils.getAsString(obj, "type");
             switch (typeName)
             {
                 case "and":
-                    return createCollectionRule(JSONUtils.getJsonArray(obj, collectionName), context, false);
+                    return createCollectionRule(JSONUtils.getAsJsonArray(obj, collectionName), context, false);
                 case "or":
-                    return createCollectionRule(JSONUtils.getJsonArray(obj, collectionName), context, true);
+                    return createCollectionRule(JSONUtils.getAsJsonArray(obj, collectionName), context, true);
                 case "not":
                     T innerRule = context.deserialize(obj.get(collectionName), elementType);
                     return createPredicate(item -> !innerRule.test(item));

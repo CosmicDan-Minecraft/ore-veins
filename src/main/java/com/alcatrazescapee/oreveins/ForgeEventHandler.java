@@ -29,6 +29,7 @@ public enum ForgeEventHandler
     {
         // Register vein reload listener
         LOGGER.debug("Before Server Start");
+        // TODO: see https://forums.minecraftforge.net/topic/89271-reload-listener-in-116-solved/
         event.getServer().getResourceManager().addReloadListener(VeinManager.INSTANCE);
     }
 
@@ -40,7 +41,7 @@ public enum ForgeEventHandler
         if (Config.COMMON.debugCommands.get())
         {
             LOGGER.info("Registering Debug Commands");
-            CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();
+            CommandDispatcher<CommandSource> dispatcher = event.getServer().getCommands().getDispatcher();
 
             ClearWorldCommand.register(dispatcher);
             FindVeinsCommand.register(dispatcher);

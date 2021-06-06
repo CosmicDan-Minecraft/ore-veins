@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -51,7 +52,7 @@ public enum BlockStatePredicateDeserializer implements JsonDeserializer<Predicat
         if (value.startsWith("#"))
         {
             String tagName = value.substring(1);
-            Tag<Block> tag = BlockTags.getCollection().get(new ResourceLocation(tagName));
+            ITag<Block> tag = BlockTags.getAllTags().getTag(new ResourceLocation(tagName));
             if (tag != null)
             {
                 return stateIn -> tag.contains(stateIn.getBlock());

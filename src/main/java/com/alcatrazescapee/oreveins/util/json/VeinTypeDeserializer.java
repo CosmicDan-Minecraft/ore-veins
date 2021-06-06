@@ -36,7 +36,7 @@ public enum VeinTypeDeserializer implements JsonDeserializer<VeinType<?>>
     public VeinType<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
         JsonObject obj = json.getAsJsonObject();
-        String veinTypeName = JSONUtils.getString(obj, "type");
+        String veinTypeName = JSONUtils.getAsString(obj, "type");
         Factory factory = factories.get(veinTypeName);
         if (factory == null)
         {

@@ -21,6 +21,7 @@ import com.alcatrazescapee.oreveins.world.vein.VeinManager;
 import com.alcatrazescapee.oreveins.world.vein.VeinType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import net.minecraft.world.server.ServerWorld;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
@@ -36,26 +37,26 @@ public final class ClearWorldCommand
     public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
         dispatcher.register(
-            Commands.literal("clearworld").requires(source -> source.hasPermissionLevel(2))
+            Commands.literal("clearworld").requires(source -> source.hasPermission(2))
                 .then(Commands.argument("radius", IntegerArgumentType.integer(1, 250))
                     .executes(cmd -> clearWorld(cmd.getSource(), IntegerArgumentType.getInteger(cmd, "radius")))));
     }
 
     private static int clearWorld(CommandSource source, int radius)
     {
-        final World world = source.getWorld();
-        final BlockPos center = new BlockPos(source.getPos());
-        final BlockState air = Blocks.AIR.getDefaultState();
+        final ServerWorld world = source.getLevel();
+        final BlockPos center = new BlockPos(source.getPosition());
+        final BlockState air = Blocks.AIR.defaultBlockState();
 
-        for (BlockPos pos : BlockPos.Mutable.getAllInBoxMutable(center.add(-radius, 255 - center.getY(), -radius), center.add(radius, -center.getY(), radius)))
+        for (BlockPos pos : BlockPos.Mutable.betweenClosed(center.offset(-radius, 255 - center.getY(), -radius), center.offset(radius, -center.getY(), radius)))
         {
             if (!VEIN_STATES.contains(world.getBlockState(pos)))
             {
-                world.setBlockState(pos, air, 2 | 16);
+                world.setBlock(pos, air, 2 | 16);
             }
         }
 
-        source.sendFeedback(new TranslationTextComponent(MOD_ID + ".command.clear_world_done"), true);
+        source.sendSuccess(new TranslationTextComponent(MOD_ID + ".command.clear_world_done"), true);
         return 1;
     }
 }

@@ -47,7 +47,7 @@ public class VeinTypeArgument implements ArgumentType<ResourceLocation>
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder)
     {
         StringReader reader = new StringReader(builder.getInput());
-        ISuggestionProvider.suggestIterable(VeinManager.INSTANCE.getKeys(), builder.createOffset(reader.getCursor()));
+        ISuggestionProvider.suggestResource(VeinManager.INSTANCE.getKeys(), builder.createOffset(reader.getCursor()));
         return builder.buildFuture();
     }
 }

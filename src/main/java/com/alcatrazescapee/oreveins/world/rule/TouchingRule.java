@@ -34,7 +34,7 @@ public class TouchingRule implements IRule
         int matchCount = 0;
         for (Direction face : Direction.values())
         {
-            if (blockMatcher.test(world.getBlockState(pos.offset(face))))
+            if (blockMatcher.test(world.getBlockState(pos.offset(face.getNormal()))))
             {
                 matchCount++;
             }
@@ -53,8 +53,8 @@ public class TouchingRule implements IRule
         {
             BlockState stateToMatch = context.deserialize(json.get("block"), BlockState.class);
             Predicate<BlockState> blockMatcher = state -> state == stateToMatch;
-            int min = JSONUtils.getInt(json, "min", 1);
-            int max = JSONUtils.getInt(json, "max", 8);
+            int min = JSONUtils.getAsInt(json, "min", 1);
+            int max = JSONUtils.getAsInt(json, "max", 8);
             return new TouchingRule(blockMatcher, min, max);
         }
     }

@@ -56,12 +56,12 @@ public class DistanceRule implements Predicate<BlockPos>
         @Override
         public DistanceRule deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
         {
-            JsonObject json = JSONUtils.getJsonObject(jsonElement, "origin_distance");
-            int minDistance = JSONUtils.getInt(json, "minimum_distance", 0);
-            int maxDistance = JSONUtils.getInt(json, "maximum_distance", Integer.MAX_VALUE);
-            int originX = JSONUtils.getInt(json, "origin_x", 0);
-            int originZ = JSONUtils.getInt(json, "origin_z", 0);
-            boolean useManhattanDistance = JSONUtils.getBoolean(json, "use_manhattan_distance", false);
+            JsonObject json = JSONUtils.getAsJsonObject(jsonElement.getAsJsonObject(), "origin_distance");
+            int minDistance = JSONUtils.getAsInt(json, "minimum_distance", 0);
+            int maxDistance = JSONUtils.getAsInt(json, "maximum_distance", Integer.MAX_VALUE);
+            int originX = JSONUtils.getAsInt(json, "origin_x", 0);
+            int originZ = JSONUtils.getAsInt(json, "origin_z", 0);
+            boolean useManhattanDistance = JSONUtils.getAsBoolean(json, "use_manhattan_distance", false);
             if (!useManhattanDistance)
             {
                 // Square all distances, instead of comparing with square roots later
